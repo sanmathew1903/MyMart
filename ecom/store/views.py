@@ -5,19 +5,12 @@ from .models import User
 import json
 import datetime
 
-from .utils import cookieCart
+from .utils import *
 # Create your views here.
 def store(request):
 
-    if request.user.is_authenticated:
-        customer=request.user.customer
-        order,created=Order.objects.get_or_create(customer=customer,complete=False)
-        items=order.orderitem_set.all()
-        cartItems=order.get_cart_items
-    else:
-        
-        cookieData=cookieCart(request)
-        cartItems=cookieData['cartItems']
+    data=cartData(request)
+    cartItems=data['cartItems']
 
     products=Product.objects.all()
     context={'products':products,'cartItems':cartItems}
@@ -26,35 +19,22 @@ def store(request):
 
 def  cart(request):
     
-    if request.user.is_authenticated:
-        customer=request.user.customer
-        order,created=Order.objects.get_or_create(customer=customer,complete=False)
-        items=order.orderitem_set.all()
-        cartItems=order.get_cart_items
-    else:
-        cookieData=cookieCart(request)
-        cartItems=cookieData['cartItems']
-        order=cookieData['order']
-        items=cookieData['items']
+    data=cartData(request)
+    cartItems=data['cartItems']
+    order=data['order']
+    items=data['items']
 
     context={'items':items,'order':order,'cartItems':cartItems}
     
     return render(request,'cart.html',context)
 
 def checkout(request):
-    if request.user.is_authenticated:
-        customer=request.user.customer
-        order,created=Order.objects.get_or_create(customer=customer,complete=False)
-        items=order.orderitem_set.all()
-        cartItems=order.get_cart_items
-    else:
-        cookieData=cookieCart(request)
-        cartItems=cookieData['cartItems']
-        order=cookieData['order']
-        items=cookieData['items']
-        
+    data=cartData(request)
+    cartItems=data['cartItems']
+    order=data['order']
+    items=data['items']
+
     context={'items':items,'order':order,'cartItems':cartItems}
-    
     return render(request,'checkout.html',context)
 
 def update_item(request):
