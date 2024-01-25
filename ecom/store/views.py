@@ -23,6 +23,7 @@ def store(request):
     return render(request,'store.html',context)
 
 def  cart(request):
+    
     if request.user.is_authenticated:
         customer=request.user.customer
         order,created=Order.objects.get_or_create(customer=customer,complete=False)
@@ -30,7 +31,7 @@ def  cart(request):
         cartItems=order.get_cart_items
     else:
         try:
-            cart=json.loads(request.COOKIE['cart'])
+            cart=json.loads(request.COOKIES['cart'])
         except:
             cart=[]
         
@@ -41,6 +42,7 @@ def  cart(request):
         cartItems=order['get_cart_items']
 
         for i in cart:
+
             cartItems+=cart[i]['quantity']
             product =Product.objects.get(id=i)
             total=(product.price*cart[i]['quantity'])
@@ -50,7 +52,7 @@ def  cart(request):
 
             item = {
                 'product':{
-                    #'id'=product.id,
+                    'id':product.id,
                     'name':product.name,
                     'price':product.price,
                     'imageURL':product.imageURL,
